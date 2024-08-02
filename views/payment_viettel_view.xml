@@ -27,6 +27,7 @@
           <field name="viettelpay_access_code"
             string="Access Code"
             required="code == 'viettelpay' and state != 'disabled'"
+            password="True"
           />
           <!-- Define a field for the Payment URL (viettelpay_Url) -->
           <field name="viettelpay_payment_link"

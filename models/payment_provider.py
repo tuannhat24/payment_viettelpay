@@ -1,3 +1,14 @@
+import logging
+import hmac
+import hashlib
+import base64
+import urllib.parse
+
+from odoo import _, api, fields, models
+from odoo.addons.payment_viettelpay import const
+
+_logger = logging.getLogger(__name__)
+
 class PaymentProviderViettelPay(models.Model):
     _inherit = "payment.provider"
 
