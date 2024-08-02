@@ -22,10 +22,10 @@
     'application': True, 
 
     'data': [
-        'views/payment_viettel_view.xml',
-        'views/payment_viettel_template.xml',
         'data/payment_provider_data.xml',
         'data/payment_method_data.xml',
+        'views/payment_viettel_view.xml',
+        'views/payment_viettel_template.xml',
     ],
 
     'license': 'LGPL-3',
