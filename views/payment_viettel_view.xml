@@ -1,0 +1,37 @@
+<odoo>
+  <record id="payment_provider_form_viettelpay" model="ir.ui.view">
+    <!-- Set the name of the view -->
+    <field name="name">ViettelPay Provider Form</field>
+    <!-- Set the model that this view is related to -->
+    <field name="model">payment.provider</field>
+    <!-- Inherit from the existing "payment.provider.form" view -->
+    <field name="inherit_id" ref="payment.payment_provider_form" />
+    <!-- Define the architecture of the view -->
+    <field name="arch" type="xml">
+      <!-- Find the group named "provider_credentials" -->
+      <group name="provider_credentials" position="inside">
+        <!-- Define a new group that is only visible when the code is "viettelpay" -->
+        <group invisible="code != 'viettelpay'" name="viettelpay_credentials">
+          <!-- Define a field for the Secret Key (viettelpay_HashSecret) -->
+          <field name="viettelpay_hash_secret"
+            string="hash_key: "
+            required="code == 'viettelpay' and state != 'disabled'"
+            password="True"
+          />
+          <!-- Define a field for the Access Code -->
+          <field name="viettelpay_access_code"
+            string="access_code: "
+            required="code == 'viettelpay' and state != 'disabled'"
+            password="True"
+          />
+          <!-- Define a field for the Payment URL (viettelpay_Url) -->
+          <field name="viettelpay_payment_link"
+            string="ViettelPay URL: "
+            required="code == 'viettelpay' and state != 'disabled'"
+            default="https://sandbox.viettelmoney.vn/PaymentGateway/payment?"
+          />
+        </group>
+      </group>
+    </field>
+  </record>
+</odoo>

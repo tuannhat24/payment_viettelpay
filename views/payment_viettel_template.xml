@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <template id="redirect_form" name="Redirect Form Template">
+            <form t-att-action="api_url" method="GET">
+                <input type="hidden" name="billcode" t-att-value="billcode"/>
+                <input type="hidden" name="command" t-att-value="command"/>
+                <input type="hidden" name="desc" t-att-value="desc"/>
+                <input type="hidden" name="locale" t-att-value="locale"/>
+                <input type="hidden" name="merchant_code" t-att-value="merchant_code"/>
+                <input type="hidden" name="order_id" t-att-value="order_id"/>
+                <input type="hidden" name="return_url" t-att-value="return_url"/>
+                <input type="hidden" name="trans_amount" t-att-value="trans_amount"/>
+                <input type="hidden" name="version" t-att-value="version"/>
+                <input type="hidden" name="check_sum" t-att-value="check_sum"/>
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelector('form').submit();
+                    });
+                </script>
+            </form>
+        </template>
+    </data>
+</odoo>
