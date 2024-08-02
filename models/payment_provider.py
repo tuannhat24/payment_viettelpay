@@ -5,10 +5,10 @@ class PaymentProviderViettelPay(models.Model):
         selection_add=[("viettelpay", "ViettelPay")], ondelete={"viettelpay": "set default"}
     )
     
+    viettelpay_merchant_code = fields.Char(string="Merchant Code", required_if_provider="viettelpay")
     viettelpay_hash_secret = fields.Char(string="Hash Key", required_if_provider="viettelpay")
     viettelpay_access_code = fields.Char(string="Access Code", required_if_provider="viettelpay")
     viettelpay_payment_link = fields.Char(string="ViettelPay URL", required_if_provider="viettelpay")
-    viettelpay_merchant_code = fields.Char(string="Merchant Code", required_if_provider="viettelpay")
 
     @api.model
     def _get_compatible_providers(self, *args, currency_id=None, is_validation=False, **kwargs):
