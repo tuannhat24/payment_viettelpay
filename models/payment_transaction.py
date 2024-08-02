@@ -21,7 +21,7 @@ class PaymentTransaction(models.Model):
             params = {
                 "version": "2.0",
                 "command": "PAYMENT",
-                "merchant_code": "DEMONT",
+                "merchant_code": self.provider_id.viettelpay_merchant_code,
                 "order_id": self.reference,
                 "trans_amount": int_amount,
                 "billcode": self.reference,
@@ -47,6 +47,7 @@ class PaymentTransaction(models.Model):
                 params=params, hash_key=self.provider_id.viettelpay_hash_secret
             )
 
+            # Set the complete payment link to return_url
             rendering_values = {
                 "api_url": "https://sandbox.viettelmoney.vn/PaymentGateway/payment",
                 "billcode": params["billcode"],
@@ -65,31 +66,3 @@ class PaymentTransaction(models.Model):
         except Exception as e:
             _logger.error("Error while generating payment link: %s", str(e))
             raise ValidationError(_("Error while generating payment link: %s") % str(e))
-
-    @api.model
-    def _get_tx_from_notification_data(self, provider_code, notification_data):
-        reference = notification_data.get('order_id')
-        if not reference:
-            raise ValidationError(_("Notification data does not contain reference (order_id)"))
-        
-        tx = self.sudo().search([('reference', '=', reference), ('provider_code', '=', provider_code)], limit=1)
-        if not tx:
-            raise ValidationError(_("Transaction not found for reference: %s") % reference)
-        
-        return tx
-
-    def _process_notification_data(self, notification_data):
-        if not notification_data:
-            raise ValidationError(_("No notification data received"))
-        
-        amount = notification_data.get('trans_amount')
-        if not amount or float(amount) != self.amount:
-            raise ValidationError(_("Transaction amount does not match or is missing"))
-        
-        reference = notification_data.get('order_id')
-        if not reference:
-            raise ValidationError(_("Notification data does not contain reference (order_id)"))
-        
-        self.provider_reference = reference
-        # Additional processing logic as needed
-        # For example, check payment status and update transaction state

@@ -1,14 +1,3 @@
-import logging
-import hmac
-import hashlib
-import base64
-import urllib.parse
-
-from odoo import _, api, fields, models
-from odoo.addons.payment_viettelpay import const
-
-_logger = logging.getLogger(__name__)
-
 class PaymentProviderViettelPay(models.Model):
     _inherit = "payment.provider"
 
@@ -19,6 +8,7 @@ class PaymentProviderViettelPay(models.Model):
     viettelpay_hash_secret = fields.Char(string="Hash Key", required_if_provider="viettelpay")
     viettelpay_access_code = fields.Char(string="Access Code", required_if_provider="viettelpay")
     viettelpay_payment_link = fields.Char(string="ViettelPay URL", required_if_provider="viettelpay")
+    viettelpay_merchant_code = fields.Char(string="Merchant Code", required_if_provider="viettelpay")
 
     @api.model
     def _get_compatible_providers(self, *args, currency_id=None, is_validation=False, **kwargs):
@@ -38,7 +28,7 @@ class PaymentProviderViettelPay(models.Model):
         access_code = str(self.viettelpay_access_code)
         bill_code = str(params.get("billcode", ""))
         command = str(params.get("command", ""))
-        merchant_code = str(params.get("merchant_code", ""))
+        merchant_code = str(self.viettelpay_merchant_code)
         order_id = str(params.get("order_id", ""))
         trans_amount = str(params.get("trans_amount", ""))
         version = str(params.get("version", ""))
