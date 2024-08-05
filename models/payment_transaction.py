@@ -66,3 +66,31 @@ class PaymentTransaction(models.Model):
         except Exception as e:
             _logger.error("Error while generating payment link: %s", str(e))
             raise ValidationError(_("Error while generating payment link: %s") % str(e))
+
+    @api.model
+    def _get_tx_from_notification_data(self, provider_code, notification_data):
+        reference = notification_data.get('order_id')
+        if not reference:
+            raise ValidationError(_("Notification data does not contain reference (order_id)"))
+        
+        tx = self.sudo().search([('reference', '=', reference), ('provider_code', '=', provider_code)], limit=1)
+        if not tx:
+            raise ValidationError(_("Transaction not found for reference: %s") % reference)
+        
+        return tx
+
+    def _process_notification_data(self, notification_data):
+        if not notification_data:
+            raise ValidationError(_("No notification data received"))
+        
+        amount = notification_data.get('trans_amount')
+        if not amount or float(amount) != self.amount:
+            raise AssertionError(_("Transaction amount does not match or is missing"))
+        
+        reference = notification_data.get('order_id')
+        if not reference:
+            raise ValidationError(_("Notification data does not contain reference (order_id)"))
+        
+        self.provider_reference = reference
+        # Additional processing logic as needed
+        # For example, check payment status and update transaction state

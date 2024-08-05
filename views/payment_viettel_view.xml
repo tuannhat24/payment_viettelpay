@@ -14,24 +14,24 @@
         <group invisible="code != 'viettelpay'" name="viettelpay_credentials">
           <!-- Define a field for the Merchant Code (viettelpay_merchant_code) -->
           <field name="viettelpay_merchant_code"
-            string="Merchant Code"
+            string="merchant_code"
             required="code == 'viettelpay' and state != 'disabled'"
           />
           <!-- Define a field for the Secret Key (viettelpay_HashSecret) -->
           <field name="viettelpay_hash_secret"
-            string="Hash Key"
+            string="hash_key"
             required="code == 'viettelpay' and state != 'disabled'"
             password="True"
           />
           <!-- Define a field for the Access Code -->
           <field name="viettelpay_access_code"
-            string="Access Code"
+            string="access_code"
             required="code == 'viettelpay' and state != 'disabled'"
             password="True"
           />
           <!-- Define a field for the Payment URL (viettelpay_Url) -->
           <field name="viettelpay_payment_link"
-            string="ViettelPay URL"
+            string="ViettelPay_URL"
             required="code == 'viettelpay' and state != 'disabled'"
             default="https://sandbox.viettelmoney.vn/PaymentGateway/payment?"
           />
