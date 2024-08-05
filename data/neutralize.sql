@@ -1,3 +1,3 @@
 UPDATE payment_provider
-   SET vnpay_tmn_code = NULL,
-       vnpay_hash_secret = NULL;
+   SET viettelpay_tmn_code = NULL,
+       viettelpay_hash_secret = NULL;

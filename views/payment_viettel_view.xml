@@ -9,34 +9,40 @@
     <!-- Define the architecture of the view -->
     <field name="arch" type="xml">
       <!-- Find the group named "provider_credentials" -->
-      <group name="provider_credentials" position="inside">
+      <xpath expr="//group[@name='provider_credentials']" position="inside">
         <!-- Define a new group that is only visible when the code is "viettelpay" -->
-        <group invisible="code != 'viettelpay'" name="viettelpay_credentials">
+        <group name="viettelpay_credentials" groups="base.group_user">
           <!-- Define a field for the Merchant Code (viettelpay_merchant_code) -->
           <field name="viettelpay_merchant_code"
-            string="merchant_code"
+            string="Merchant Code"
             required="code == 'viettelpay' and state != 'disabled'"
           />
-          <!-- Define a field for the Secret Key (viettelpay_HashSecret) -->
+          <!-- Define a field for the Hash Key (viettelpay_hash_secret) -->
           <field name="viettelpay_hash_secret"
-            string="hash_key"
+            string="Hash Key"
             required="code == 'viettelpay' and state != 'disabled'"
             password="True"
           />
           <!-- Define a field for the Access Code -->
           <field name="viettelpay_access_code"
-            string="access_code"
+            string="Access Code"
             required="code == 'viettelpay' and state != 'disabled'"
             password="True"
           />
-          <!-- Define a field for the Payment URL (viettelpay_Url) -->
+          <!-- Define a field for the Payment URL (viettelpay_payment_link) -->
           <field name="viettelpay_payment_link"
-            string="ViettelPay_URL"
+            string="ViettelPay URL"
             required="code == 'viettelpay' and state != 'disabled'"
             default="https://sandbox.viettelmoney.vn/PaymentGateway/payment?"
           />
+          <!-- Define a field for the White List IPs -->
+          <field name="viettelpay_white_list_ip"
+            string="White List IPs"
+            required="code == 'viettelpay' and state != 'disabled'"
+            placeholder="Enter IPs separated by commas"
+          />
         </group>
-      </group>
+      </xpath>
     </field>
   </record>
 </odoo>

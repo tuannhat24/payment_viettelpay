@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+        <template id="payment_result" name="Kết Quả Thanh Toán">
+            <t t-call="website.layout">
+                <div class="container">
+                    <div class="alert alert-info mt32 mb32">
+                        <h1>Thành công</h1>
+                        <p>Mã hóa đơn: <t t-esc="billcode"/></p>
+                        <p>Mã đơn hàng: <t t-esc="order_id"/></p>
+                        <p>Số điện thoại: <t t-esc="cust_msisdn"/></p>
+                        <p>Mã lỗi: <t t-esc="error_code"/></p>
+                        <p>Đối tác: <t t-esc="merchant_code"/></p>
+                        <p>Trạng thái: <t t-esc="payment_status == '1' and 'Giao dịch thành công' or 'Giao dịch không thành công'"/></p>
+                        <p>Số tiền thanh toán: <t t-esc="trans_amount"/></p>
+                        <p>Mã giao dịch: <t t-esc="vt_transaction_id"/></p>
+                        <p>Nội dung: <t t-esc="content"/></p>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
