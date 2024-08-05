@@ -1,8 +1,10 @@
 import logging
 import urllib.parse
 import pprint
+import hmac
+import hashlib
 
-from odoo import http
+from odoo import http, _
 from odoo.http import request
 from werkzeug.exceptions import Forbidden
 from odoo.exceptions import ValidationError
@@ -41,7 +43,7 @@ class ViettelPayController(http.Controller):
 
         if ip_address not in white_list_ip:
             _logger.warning("Received notification from an unauthorized IP address: %s", ip_address)
-            return
+            return request.make_json_response({"RspCode": "99", "Message": "Lỗi không xác định"})
 
         try:
             tx_sudo = request.env["payment.transaction"].sudo()._get_tx_from_notification_data("viettelpay", data)
@@ -50,18 +52,18 @@ class ViettelPayController(http.Controller):
         except Forbidden:
             _logger.warning("Forbidden error during signature verification. Aborting.", exc_info=True)
             tx_sudo._set_error("ViettelPay: " + _("Received data with invalid signature."))
-            return request.make_json_response({"RspCode": "97", "Message": "Invalid Checksum"})
+            return request.make_json_response({"RspCode": "02", "Message": "Check sum không chính xác"})
         except AssertionError:
             _logger.warning("Assertion error during notification handling. Aborting.", exc_info=True)
             tx_sudo._set_error("ViettelPay: " + _("Received data with invalid amount."))
-            return request.make_json_response({"RspCode": "04", "Message": "Invalid amount"})
+            return request.make_json_response({"RspCode": "03", "Message": "Tài khoản VTP không đủ điều kiện thanh toán"})
         except ValidationError:
             _logger.warning("Unable to handle the notification data. Aborting.", exc_info=True)
-            return request.make_json_response({"RspCode": "01", "Message": "Order Not Found"})
+            return request.make_json_response({"RspCode": "01", "Message": "Định dạng dữ liệu không hợp lệ"})
 
         if tx_sudo.state in ["done", "cancel", "error"]:
             _logger.warning("Received notification for already processed transaction. Aborting.")
-            return request.make_json_response({"RspCode": "02", "Message": "Order already confirmed"})
+            return request.make_json_response({"RspCode": "99", "Message": "Lỗi không xác định"})
 
         responseCode = data.get("viettel_ResponseCode")
 
@@ -77,7 +79,7 @@ class ViettelPayController(http.Controller):
             _logger.warning("Received payment notification from ViettelPay with invalid response code: %s", responseCode)
             tx_sudo._set_error("ViettelPay: " + _("Received data with invalid response code: %s", responseCode))
             _logger.info("Payment transaction failed.")
-        return request.make_json_response({"RspCode": "00", "Message": "Confirm Success"})
+        return request.make_json_response({"RspCode": "00", "Message": "Truy vấn thành công"})
 
     @staticmethod
     def _verify_notification_signature(data, tx_sudo):
