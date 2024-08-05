@@ -13,6 +13,7 @@ _logger = logging.getLogger(__name__)
 
 class ViettelPayController(http.Controller):
     _return_url = "/payment/viettelpay/return"
+    _cancel_url = "/payment/viettelpay/cancel"
     _ipn_url = "/payment/viettelpay/webhook"
 
     @http.route(_return_url, type="http", auth="public", methods=["GET"], csrf=False, save_session=False)
@@ -32,6 +33,23 @@ class ViettelPayController(http.Controller):
         
         # Redirect to the constructed payment link
         return request.redirect(payment_link_data)
+
+    @http.route(_cancel_url, type="http", auth="public", methods=["GET"], csrf=False, save_session=False)
+    def viettelpay_cancel_from_checkout(self, **data):
+        _logger.info("Handling cancellation from ViettelPay with data: %s", data)
+
+        cancel_url = (
+            "https://mstt.vn/PaymentResult"
+            "?billcode={billcode}&cust_msisdn={cust_msisdn}&error_code={error_code}"
+            "&merchant_code={merchant_code}&order_id={order_id}&payment_status=5"
+            "&trans_amount={trans_amount}&vt_transaction_id={vt_transaction_id}&check_sum={check_sum}"
+        ).format(**data)
+
+        # Log the constructed cancel URL
+        _logger.info("Redirecting to cancel URL: %s", cancel_url)
+        
+        # Redirect to the constructed cancel URL
+        return request.redirect(cancel_url)
 
     @http.route(_ipn_url, type="http", auth="public", methods=["POST"], csrf=False, save_session=False)
     def viettelpay_webhook(self, **data):
