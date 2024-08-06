@@ -1,22 +1,18 @@
 <odoo>
-    <data>
-        <template id="payment_result" name="Kết Quả Thanh Toán">
-            <t t-call="website.layout">
-                <div class="container">
-                    <div class="alert alert-info mt32 mb32">
-                        <h1>Thành công</h1>
-                        <p>Mã hóa đơn: <t t-esc="billcode"/></p>
-                        <p>Mã đơn hàng: <t t-esc="order_id"/></p>
-                        <p>Số điện thoại: <t t-esc="cust_msisdn"/></p>
-                        <p>Mã lỗi: <t t-esc="error_code"/></p>
-                        <p>Đối tác: <t t-esc="merchant_code"/></p>
-                        <p>Trạng thái: <t t-esc="payment_status == '1' and 'Giao dịch thành công' or 'Giao dịch không thành công'"/></p>
-                        <p>Số tiền thanh toán: <t t-esc="trans_amount"/></p>
-                        <p>Mã giao dịch: <t t-esc="vt_transaction_id"/></p>
-                        <p>Nội dung: <t t-esc="content"/></p>
-                    </div>
-                </div>
-            </t>
-        </template>
-    </data>
+  <template id="payment_result">
+    <t t-call="web.layout">
+      <div class="oe_structure"/>
+      <h1>Thanh toán thành công</h1>
+      <p>Thông tin giao dịch:</p>
+      <ul>
+        <li><strong>Mã giao dịch:</strong> <t t-esc="data.get('order_id')"/></li>
+        <li><strong>Mã hóa đơn:</strong> <t t-esc="data.get('billcode')"/></li>
+        <li><strong>Số tiền:</strong> <t t-esc="data.get('trans_amount')"/> VNĐ</li>
+        <li><strong>Trạng thái thanh toán:</strong> <t t-esc="data.get('payment_status') == '1' and 'Thành công' or 'Thất bại'"/></li>
+        <li><strong>Mã giao dịch Viettel:</strong> <t t-esc="data.get('vt_transaction_id')"/></li>
+        <li><strong>Số điện thoại khách hàng:</strong> <t t-esc="data.get('cust_msisdn')"/></li>
+        <li><strong>Mã lỗi:</strong> <t t-esc="data.get('error_code')"/></li>
+      </ul>
+    </t>
+  </template>
 </odoo>

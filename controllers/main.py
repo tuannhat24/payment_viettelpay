@@ -20,16 +20,12 @@ class ViettelPayController(http.Controller):
     @http.route(_return_url, type="http", auth="public", methods=["GET"], csrf=False, save_session=False)
     def viettelpay_return_from_checkout(self, **data):
         _logger.info("Xử lý chuyển hướng từ ViettelPay với dữ liệu: %s", data)
-
-        # Chuyển hướng đến URL kết quả với dữ liệu cần thiết
-        return request.redirect(f"/payment/viettelpay/result?{urllib.parse.urlencode(data)}")
+        return request.redirect(f"{self._result_url}?{urllib.parse.urlencode(data)}")
 
     @http.route(_cancel_url, type="http", auth="public", methods=["GET"], csrf=False, save_session=False)
     def viettelpay_cancel_from_checkout(self, **data):
         _logger.info("Xử lý hủy từ ViettelPay với dữ liệu: %s", data)
-
-        # Chuyển hướng đến URL kết quả với dữ liệu cần thiết
-        return request.redirect(f"/payment/viettelpay/result?{urllib.parse.urlencode(data)}")
+        return request.redirect(f"{self._result_url}?{urllib.parse.urlencode(data)}")
 
     @http.route(_ipn_url, type="http", auth="public", methods=["POST"], csrf=False, save_session=False)
     def viettelpay_webhook(self, **data):
@@ -58,6 +54,9 @@ class ViettelPayController(http.Controller):
         except ValidationError:
             _logger.warning("Không thể xử lý dữ liệu thông báo. Dừng lại.", exc_info=True)
             return request.make_json_response({"RspCode": "01", "Message": "Định dạng dữ liệu không hợp lệ"})
+        except Exception as e:
+            _logger.error("Lỗi không xác định: %s", str(e), exc_info=True)
+            return request.make_json_response({"RspCode": "99", "Message": "Lỗi không xác định"})
 
         if tx_sudo.state in ["done", "cancel", "error"]:
             _logger.warning("Nhận thông báo cho giao dịch đã được xử lý. Dừng lại.")
@@ -87,7 +86,7 @@ class ViettelPayController(http.Controller):
     @staticmethod
     def _verify_notification_signature(data, tx_sudo):
         if not data:
-            _logger.warning("Nhận thông báo với dữ liệu thiếu.")
+            _logger.warning("Received notification with missing data.")
             raise Forbidden()
 
         receive_signature = data.get("viettel_SecureHash")
@@ -108,14 +107,17 @@ class ViettelPayController(http.Controller):
                     seq = 1
                     hasData = str(key) + "=" + urllib.parse.quote_plus(str(val))
 
-        expected_signature = ViettelPayController.__hmacsha512(tx_sudo.provider_id.viettel_hash_secret, hasData)
+        expected_signature = ViettelPayController.__hmacsha1(tx_sudo.provider_id.viettel_hash_secret, hasData)
+
+        _logger.info("Received signature: %s", receive_signature)
+        _logger.info("Expected signature: %s", expected_signature)
 
         if not hmac.compare_digest(receive_signature, expected_signature):
-            _logger.warning("Nhận thông báo với chữ ký không hợp lệ.")
+            _logger.warning("Received notification with invalid signature.")
             raise Forbidden()
 
     @staticmethod
-    def __hmacsha512(key, data):
+    def __hmacsha1(key, data):
         byteKey = key.encode("utf-8")
         byteData = data.encode("utf-8")
-        return hmac.new(byteKey, byteData, hashlib.sha512).hexdigest()
+        return hmac.new(byteKey, byteData, hashlib.sha1).hexdigest()

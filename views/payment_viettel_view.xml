@@ -33,7 +33,6 @@
           <field name="viettelpay_payment_link"
             string="ViettelPay URL"
             required="code == 'viettelpay' and state != 'disabled'"
-            default="https://sandbox.viettelmoney.vn/PaymentGateway/payment?"
           />
           <!-- Define a field for the White List IPs -->
           <field name="viettelpay_white_list_ip"

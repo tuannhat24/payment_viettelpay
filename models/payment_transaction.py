@@ -49,6 +49,7 @@ class PaymentTransaction(models.Model):
 
             # Set the complete payment link to return_url
             rendering_values = {
+                # "api_url": payment_link_data,
                 "api_url": "https://sandbox.viettelmoney.vn/PaymentGateway/payment",
                 "billcode": params["billcode"],
                 "command": params["command"],
@@ -59,7 +60,7 @@ class PaymentTransaction(models.Model):
                 "return_url": params["return_url"],
                 "trans_amount": params["trans_amount"],
                 "version": params["version"],
-                "check_sum": payment_link_data.split('check_sum=')[1],  # Assuming the check_sum is the last part of the URL
+                "check_sum": payment_link_data.split('check_sum=')[1],
             }
             return rendering_values
 
@@ -94,3 +95,13 @@ class PaymentTransaction(models.Model):
         self.provider_reference = reference
         # Additional processing logic as needed
         # For example, check payment status and update transaction state
+
+
+    def _set_done(self):
+        self.write({'state': 'done'})
+
+    def _set_canceled(self, state_message):
+        self.write({'state': 'cancel', 'state_message': state_message})
+
+    def _set_error(self, error_message):
+        self.write({'state': 'error', 'state_message': error_message})

@@ -6,7 +6,7 @@
     # Loại module
     'category': 'Accounting/Payment Providers',
 
-    'sequence': 5,
+    'sequence': 0,
 
     'summary': 'Viettel Payment',
     'description': '',
